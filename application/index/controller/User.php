@@ -30,10 +30,22 @@ class User extends Base {
 	}
 
     //查看某一产品新息
-    public function product($gid = null) {
+    public function goods($gid = null) {
         $user = $this->get_user();
         $this->assign('user',$user);
         $product = Db::table('goods')->where('gid', $gid)->find();
+        $product['gimg'] = explode(',',substr($product['gimg'], 2,-2));
+        $this->assign('product',$product);
+       // var_dump($product);
+        //exit;
+        return $this->fetch('index/product');
+    }
+
+     //查看某一大师作品新息
+    public function works($works_id = null) {
+        $user = $this->get_user();
+        $this->assign('user',$user);
+        $product = Db::table('works')->where('works_id', $works_id)->find();
         $this->assign('product',$product);
         return $this->fetch('index/product');
     }
@@ -43,56 +55,78 @@ class User extends Base {
 	public function shopping_all() {
 		
         $user = $this->get_user();
-        $join = [
-            ['address a','o.add_id = a.add_id'],
-            ['shopping_cart s','o.shopping_order_id = s.shopping_order_id'],
-        ];
 
         $order = Db::table('order')->alias('o')
-                                   ->join('address a','o.add_id = a.add_id')
-                                   ->join('shopping_cart s','o.shopping_order_id = s.shopping_order_id')
-                                   ->join('goods g', 'g.gid = s.gid')
-                                  // ->join('gimg m', 'm.gid = g.gid')
+                                   ->join('address a','o.address_id = a.add_id')
                                    ->where('o.user_id',$user['user_id'])
                                    //->where('order_status', '0')
                                    ->order('order_time desc')
                                    ->select();
-
+        
         foreach ($order as $key => $value) {
-           
-        	$order[$key]['gimg'] = Db::table('gimg')->where('gid', $value['gid'])->find();
-         
+           $order[$key]['total_num'] = 0;
+           $order[$key]['shopping_goods'] = json_decode($value['shopping_goods'],true);
+
+           foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
+                $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg')->where('gid', $value1['gid'])->find();
+                $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
+                $order[$key]['shopping_goods']['goods'][$key1]['pri'] = implode($value1['gpri']);
+                $order[$key]['total_num']  += $value1['num'];
+           }
+
+           foreach ($order[$key]['shopping_goods']['works'] as $key2 => $value2) {
+                 $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic')->where('works_id', $value2['works_id'])->find();
+                 $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
+                 $order[$key]['shopping_goods']['works'][$key2]['pri'] = implode($value2['works_prize']);
+                 $order[$key]['total_num']  += $value2['num'];
+           }
+        	         
         }
-
-
         $this->assign('order',$order);
         $this->assign('user',$user);
         return $this->fetch('index/shoppingAll');
 	}
+  
+  public function jsontest() {
+     $shopping_goods = ["20170424\\83eb42d75dc5ee82d738dd1b1a6a5f4b.png","20170424\\56ea20ee9672bc4fe4f44eb98b5845e7.png"];
+
+     return json_decode($shopping_goods);
+
+
+  }
+
+
 
     //等待付款页面
 	public function wait_pay() {
 
-	    $user = $this->get_user();
-        $join = [
-            ['address a','o.add_id = a.add_id'],
-            ['shopping_cart s','o.shopping_order_id = s.shopping_order_id'],
-        ];
+	      $user = $this->get_user();
 
         $order = Db::table('order')->alias('o')
-                                   ->join('address a','o.add_id = a.add_id')
-                                   ->join('shopping_cart s','o.shopping_order_id = s.shopping_order_id')
-                                   ->join('goods g', 'g.gid = s.gid')
-                                  // ->join('gimg m', 'm.gid = g.gid')
+                                   ->join('address a','o.address_id = a.add_id')
                                    ->where('o.user_id',$user['user_id'])
                                    ->where('order_status', '0')
                                    ->order('order_time desc')
                                    ->select();
-
+        
         foreach ($order as $key => $value) {
-           
-            $order[$key]['gimg'] = Db::table('gimg')->where('gid', $value['gid'])->find();
-         
+           $order[$key]['total_num'] = 0;
+           $order[$key]['shopping_goods'] = json_decode($value['shopping_goods'],true);
+
+           foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
+                $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg')->where('gid', $value1['gid'])->find();
+                $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
+                $order[$key]['shopping_goods']['goods'][$key1]['pri'] = implode($value1['gpri']);
+                $order[$key]['total_num']  += $value1['num'];
+           }
+
+           foreach ($order[$key]['shopping_goods']['works'] as $key2 => $value2) {
+                 $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic')->where('works_id', $value2['works_id'])->find();
+                 $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
+                 $order[$key]['shopping_goods']['works'][$key2]['pri'] = implode($value2['works_prize']);
+                 $order[$key]['total_num']  += $value2['num'];
+           }
+                   
         }
 
 
@@ -102,26 +136,33 @@ class User extends Base {
 	}
 
 	public function wait_send() {
-		$user = $this->get_user();
-        $join = [
-            ['address a','o.add_id = a.add_id'],
-            ['shopping_cart s','o.shopping_order_id = s.shopping_order_id'],
-        ];
+		    $user = $this->get_user();
 
         $order = Db::table('order')->alias('o')
-                                   ->join('address a','o.add_id = a.add_id')
-                                   ->join('shopping_cart s','o.shopping_order_id = s.shopping_order_id')
-                                   ->join('goods g', 'g.gid = s.gid')
-                                  // ->join('gimg m', 'm.gid = g.gid')
+                                   ->join('address a','o.address_id = a.add_id')
                                    ->where('o.user_id',$user['user_id'])
                                    ->where('order_status', '1')
                                    ->order('order_time desc')
                                    ->select();
-
+        
         foreach ($order as $key => $value) {
-           
-            $order[$key]['gimg'] = Db::table('gimg')->where('gid', $value['gid'])->find();
-         
+           $order[$key]['total_num'] = 0;
+           $order[$key]['shopping_goods'] = json_decode($value['shopping_goods'],true);
+
+           foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
+                $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg')->where('gid', $value1['gid'])->find();
+                $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
+                $order[$key]['shopping_goods']['goods'][$key1]['pri'] = implode($value1['gpri']);
+                $order[$key]['total_num']  += $value1['num'];
+           }
+
+           foreach ($order[$key]['shopping_goods']['works'] as $key2 => $value2) {
+                 $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic')->where('works_id', $value2['works_id'])->find();
+                 $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
+                 $order[$key]['shopping_goods']['works'][$key2]['pri'] = implode($value2['works_prize']);
+                 $order[$key]['total_num']  += $value2['num'];
+           }
+                   
         }
 
 
@@ -134,25 +175,32 @@ class User extends Base {
 	public function wait_comfirm() {
 		
         $user = $this->get_user();
-        $join = [
-            ['address a','o.add_id = a.add_id'],
-            ['shopping_cart s','o.shopping_order_id = s.shopping_order_id'],
-        ];
 
         $order = Db::table('order')->alias('o')
-                                   ->join('address a','o.add_id = a.add_id')
-                                   ->join('shopping_cart s','o.shopping_order_id = s.shopping_order_id')
-                                   ->join('goods g', 'g.gid = s.gid')
-                                  // ->join('gimg m', 'm.gid = g.gid')
+                                   ->join('address a','o.address_id = a.add_id')
                                    ->where('o.user_id',$user['user_id'])
                                    ->where('order_status', '2')
                                    ->order('order_time desc')
                                    ->select();
-
+        
         foreach ($order as $key => $value) {
-           
-            $order[$key]['gimg'] = Db::table('gimg')->where('gid', $value['gid'])->find();
-         
+           $order[$key]['total_num'] = 0;
+           $order[$key]['shopping_goods'] = json_decode($value['shopping_goods'],true);
+
+           foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
+                $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg')->where('gid', $value1['gid'])->find();
+                $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
+                $order[$key]['shopping_goods']['goods'][$key1]['pri'] = implode($value1['gpri']);
+                $order[$key]['total_num']  += $value1['num'];
+           }
+
+           foreach ($order[$key]['shopping_goods']['works'] as $key2 => $value2) {
+                 $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic')->where('works_id', $value2['works_id'])->find();
+                 $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
+                 $order[$key]['shopping_goods']['works'][$key2]['pri'] = implode($value2['works_prize']);
+                 $order[$key]['total_num']  += $value2['num'];
+           }
+                   
         }
 
 
