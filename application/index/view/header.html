@@ -55,12 +55,26 @@
 
     <!-- 搜素框 -->
     <div class="classify" style="padding: 10px;">
-      <form id="sr_fm"> 
+      <form id="sr_fm" method="get" action="{:url('Product/search')}"> 
       <div class="search-inner sr_inp_bg focus"> 
         <div class="search-center">
           <i class="glyphicon glyphicon-search"></i>
         </div> 
-        <input type="search" class="sr_inp" placeholder="搜索" style="margin-left: 5px">
+        <input name="product" type="text" class="sr_inp" placeholder="搜索" style="margin-left: 5px" >
       </div> 
       </form> 
     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

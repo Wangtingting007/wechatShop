@@ -21,7 +21,10 @@ class User extends Base {
     }
 
     public function test() {
-       return $this->fetch('index/editAddress');
+      $array = array('stepone'=>3);
+ //by default, the pointer is on the first element
+    $a  = reset($array) . "<br/>\n"; // "stepone"
+echo $a;
     }
 
 
@@ -63,7 +66,8 @@ class User extends Base {
         $user = $this->get_user();
 
         $order = Db::table('order')->alias('o')
-                                   ->join('address a','o.address_id = a.add_id')
+                                   ->join('address a','a.add_id = o.address_id','left')
+                                   ->field('o.order_id, o.order_num, o.user_id,o.shopping_goods,o.order_time, o.order_pri, o.address_id, o.express_name, o.express_num, o.order_status, a.add_province, a.add_city, a.add_area, a.add_detail,a.add_name,a.add_telephone')
                                    ->where('o.user_id',$user['user_id'])
                                    //->where('order_status', '0')
                                    ->order('order_time desc')
@@ -72,26 +76,37 @@ class User extends Base {
         foreach ($order as $key => $value) {
            $order[$key]['total_num'] = 0;
            $order[$key]['shopping_goods'] = json_decode($value['shopping_goods'],true);
+     
+           if(isset($order[$key]['shopping_goods']['goods'])) {
+                foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
 
-           foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
-                $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg')->where('gid', $value1['gid'])->find();
-                var_dump($value1['gid']);
-                exit;
-                $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
-                $order[$key]['shopping_goods']['goods'][$key1]['pri'] = implode($value1['gpri']);
-                $order[$key]['total_num']  += $value1['num'];
+                    
+
+                    $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg')->where('gid', $value1['gid'])->find();
+                    $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
+
+                    $order[$key]['shopping_goods']['goods'][$key1]['gpri'] = reset($value1['gpri']);
+                    
+                    $order[$key]['total_num']  += $value1['num'];
+               }
            }
 
-           foreach ($order[$key]['shopping_goods']['works'] as $key2 => $value2) {
-                 $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic')->where('works_id', $value2['works_id'])->find();
-                 $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
-                 $order[$key]['shopping_goods']['works'][$key2]['pri'] = implode($value2['works_prize']);
-                 $order[$key]['total_num']  += $value2['num'];
+           if(isset($order[$key]['shopping_goods']['works'])) {
+
+               foreach ($order[$key]['shopping_goods']['works'] as $key2 => $value2) {
+                     $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic')->where('works_id', $value2['works_id'])->find();
+                     $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
+                     
+                     $order[$key]['shopping_goods']['works'][$key2]['pri'] = reset($value2['works_prize']);
+                     $order[$key]['total_num']  += $value2['num'];
+               }
+
            }
+           
         	         
         }
-      var_dump($order);
-      exit;
+      // var_dump($order);
+      // exit;
         $this->assign('order',$order);
         $this->assign('user',$user);
         return $this->fetch('index/shoppingAll');
@@ -113,7 +128,8 @@ class User extends Base {
 	      $user = $this->get_user();
 
         $order = Db::table('order')->alias('o')
-                                   ->join('address a','o.address_id = a.add_id')
+                                   ->join('address a','a.add_id = o.address_id','left')
+                                   ->field('o.order_id, o.order_num, o.user_id,o.shopping_goods,o.order_time, o.order_pri, o.address_id, o.express_name, o.express_num, o.order_status, a.add_province, a.add_city, a.add_area, a.add_detail,a.add_name,a.add_telephone')
                                    ->where('o.user_id',$user['user_id'])
                                    ->where('order_status', '0')
                                    ->order('order_time desc')
@@ -149,7 +165,8 @@ class User extends Base {
 		    $user = $this->get_user();
 
         $order = Db::table('order')->alias('o')
-                                   ->join('address a','o.address_id = a.add_id')
+                                   ->join('address a','a.add_id = o.address_id','left')
+                                   ->field('o.order_id, o.order_num, o.user_id,o.shopping_goods,o.order_time, o.order_pri, o.address_id, o.express_name, o.express_num, o.order_status, a.add_province, a.add_city, a.add_area, a.add_detail,a.add_name,a.add_telephone')
                                    ->where('o.user_id',$user['user_id'])
                                    ->where('order_status', '1')
                                    ->order('order_time desc')
@@ -187,7 +204,8 @@ class User extends Base {
         $user = $this->get_user();
 
         $order = Db::table('order')->alias('o')
-                                   ->join('address a','o.address_id = a.add_id')
+                                   ->join('address a','a.add_id = o.address_id','left')
+                                   ->field('o.order_id, o.order_num, o.user_id,o.shopping_goods,o.order_time, o.order_pri, o.address_id, o.express_name, o.express_num, o.order_status, a.add_province, a.add_city, a.add_area, a.add_detail,a.add_name,a.add_telephone')
                                    ->where('o.user_id',$user['user_id'])
                                    ->where('order_status', '2')
                                    ->order('order_time desc')
