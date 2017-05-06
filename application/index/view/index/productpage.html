@@ -21,11 +21,16 @@
 				<div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
 				  <!-- Indicators -->
 				  <ol class="carousel-indicators">
+
 				    <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+				    {for star="1" end="count($product['gimg'])"}
+				    <li data-target="#carousel-example-generic" data-slide-to="$i"></li>
+				    {/for}
+				   <!--  <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
 				    <li data-target="#carousel-example-generic" data-slide-to="1"></li>
 				    <li data-target="#carousel-example-generic" data-slide-to="2"></li>
 				    <li data-target="#carousel-example-generic" data-slide-to="3"></li>
-				    <li data-target="#carousel-example-generic" data-slide-to="4"></li>
+				    <li data-target="#carousel-example-generic" data-slide-to="4"></li> -->
 				  </ol>
 
 				  <!-- Wrapper for slides -->
@@ -79,126 +84,7 @@
 			<!-- 图文介绍 -->
 			<div class="tab-item active">			
 				<div class="pro-detail" id="description">
-
-					<!-- 基本信息 -->
-					<p>
-						<strong><span>品牌：</span></strong><span>pangao 攀高(XXXXXXX)</span>
-					</p>
-					<p>
-						<strong><span>品名：</span></strong><span>{$product.gname}</span>
-					</p>
-					<p>
-						<strong><span>型号：</span></strong><span>PG-2601B8(XXXXXXX)</span>
-					</p>
-					<p>
-						<strong><span>材质：</span></strong><span>ABS(XXXXXXX)</span>
-					</p>
-					<p>
-						<strong><span>产品尺寸：</span></strong><span>174mm×145mm×30mm(XXXXXXX)</span>
-					</p>
-					<p>
-						<strong><span>按摩仪净重：</span></strong><span>300g(XXXXXXX)</span>
-					</p>
-					<p>
-						<strong><span>功率：</span></strong><span>≤6W(XXXXXXX)</span>
-					</p>
-					<p>
-						<strong><span>产品内含：</span></strong><span>按摩仪×1，遥控器×1，说明书（含保修卡）×1，适配器×1，产品合格证×1(XXXXXXX)</span>
-					</p>
-
-					<!-- 运输说明 -->
-					<br/>
-					<p>
-						<strong><span>运输说明：</span></strong><br>
-					</p>
-					<p>
-						<span>仅限大陆地区包邮优惠，深圳发货，顺丰快递。(XXXXXXX)</span>
-					</p>
-
-					<!-- 退换货说明 -->
-					<br/>
-					<p>
-						<strong><span>退换货说明：(XXXXXXX)</span></strong>
-					</p>
-					<p>
-						<span>1.本产品支持7天内无理由退货，但产品不得影响二次销售，运费由买家承担。</span>
-					</p>
-					<p>
-						<span>2.商家为本产品提供1年质保服务。</span>
-					</p>
-					<p>
-						<span>3.因质量问题需申请退换货，请收到商品及时拍照，并联系在线客服，我们会尽快为您办理退换货服务。</span>
-					</p>
-					<p>
-						<span>4.订单商品退款，我们会在确认商品情况后，5个工作日内为您办理退款操作，实际到账日以银行及支付规则为准。</span>
-					</p>
-
-					<p>
-						<img src="img/dszp5.jpg"></span></span>
-					</p>
-					<p>
-						这是一款来自panga攀高的颈椎按摩仪。
-					</p>
-					<p>
-						<img src="img/dszp5.jpg"></span></span>
-					</p>
-					<p>
-						<img src="img/dszp5.jpg"></span></span>
-					</p>
-					<p>每天不是埋头看电脑就是低头玩手机，时间一长难免脖子发硬、疼痛难忍，严重时还会头晕恶心。</p>
-					<p>自己按按敲敲吧没什么作用，出去按摩又麻烦，还能怎么办呢？</p>
-					<p>
-						<img src="img/dszp5.jpg"></span></span>
-					</p>
-					<p>这款攀高颈椎按摩仪，让你能随时随地享受专业按摩</p>
-					<p>
-						<img src="img/dszp5.jpg"></span></span>
-					</p>
-					
-					<!-- 使用提示 -->
-					<p>
-						<strong><span>使用提示：(XXXXXXX)</span></strong>
-					</p>
-					<p>
-						<span>1.使用前，请用湿毛巾擦拭颈部，使按摩仪紧贴皮肤，以免导致刺痛感。</span>
-					</p>
-					<p>
-						<span>2.电脉冲先弱后强，能让颈部逐渐适应电脉冲按摩，再逐渐调节为适合自己的强度。</span>
-					</p>
-					<p>
-						<span>3.每个人对电脉冲的敏感度不同，若感觉不适，可选择其他功能进行按摩。</span>
-					</p>
-					<p>
-						<span>4.热灸前可以在颈部涂抹活络油、红花油等辅助产品，治疗效果更佳，但结束后请擦净按摩仪。</span>
-					</p>
-
-					<!-- 使用禁忌 -->
-					<p>
-						<strong><span>使用禁忌：(XXXXXXX)</span></strong>
-					</p>
-					<p>
-						<span>1.切勿与其他医疗电子仪器同时使用，如心脏起搏器、人工心肺等维持生命用医用电子器械、心电图仪等医用电子器械，否则会导致危险。</span>
-					</p>
-					<p>
-						<span>2.如果患者身上同时使用高频手术设备和治疗仪，在治疗仪按摩片位置可能引起烧伤，也可能损坏治疗仪；如果在短波或微波治疗设备附近（1米）使用治疗仪时，本治疗仪的输出可能不稳定。</span>
-					</p>
-					<p>
-						<span>3.靠近胸部使用电极会增加心脏纤颤的危险。</span>
-					</p>
-					<p>
-						<span>4.孕妇及妇女月经期、皮肤敏感者、心脏病、血压异常、恶性肿瘤、脑血管患者、急性病患者或其他正在接受医生治疗者等须先咨询医生后方可使用本产品。</span>
-					</p>
-					<p>
-						<span>5.请勿给儿童或无表达意式能力的人使用。</span>
-					</p>
-
-					<!-- 保养建议 -->
-					<p>
-						<strong><span>保养建议：(XXXXXXX)</span></strong>
-					</p>
-					<p>
-						<span>请放在干燥、通风的地方保管。</span>
-					</p>
+				{$product.gdec_l}
 				</div>
 			</div>
 		</div>
