@@ -80,25 +80,47 @@ echo $a;
            if(isset($order[$key]['shopping_goods']['goods'])) {
                 foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
 
-                    
+                    $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg,sale_mode')->where('gid', $value1['gid'])->find();
+                    if(isset( $order[$key]['shopping_goods']['goods'][$key1]['info']['sale_mode'])) {
+                        $sale_mode = json_decode($order[$key]['shopping_goods']['goods'][$key1]['info']['sale_mode'],true);
+                        if($sale_mode['mode']==1) {
+                          $sale_mode = $sale_mode['name'];
+                        } else if($sale_mode['mode']==2) {
+                          $sale_mode = "预定/".$sale_mode['name'];
+                        }
 
-                    $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg')->where('gid', $value1['gid'])->find();
-                    $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
+                        $order[$key]['shopping_goods']['goods'][$key1]['info']['sale_mode'] = $sale_mode;
+                        $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
 
-                    $order[$key]['shopping_goods']['goods'][$key1]['gpri'] = reset($value1['gpri']);
+                        $order[$key]['shopping_goods']['goods'][$key1]['guige'] = array_keys($order[$key]['shopping_goods']['goods'][$key1]['gpri'])[0]; 
+                        $order[$key]['shopping_goods']['goods'][$key1]['gpri'] = reset($value1['gpri']); 
+
+                        $order[$key]['total_num']  += $value1['num'];
+                   }
                     
-                    $order[$key]['total_num']  += $value1['num'];
                }
            }
 
            if(isset($order[$key]['shopping_goods']['works'])) {
 
                foreach ($order[$key]['shopping_goods']['works'] as $key2 => $value2) {
-                     $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic')->where('works_id', $value2['works_id'])->find();
-                     $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
-                     
-                     $order[$key]['shopping_goods']['works'][$key2]['pri'] = reset($value2['works_prize']);
-                     $order[$key]['total_num']  += $value2['num'];
+                     $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic,sale_mode')->where('works_id', $value2['works_id'])->find();
+                      
+                      if (isset($order[$key]['shopping_goods']['works'][$key2]['info']['sale_mode'])) {
+                          $sale_mode = json_decode($order[$key]['shopping_goods']['works'][$key2]['info']['sale_mode'],true);
+                          if($sale_mode['mode']==1) {
+                            $sale_mode = $sale_mode['name'];
+                          } else if($sale_mode['mode']==2) {
+                            $sale_mode = "预定/".$sale_mode['name'];
+                          }
+                          $order[$key]['shopping_goods']['works'][$key2]['info']['sale_mode'] = $sale_mode;
+                          $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
+    
+                         $order[$key]['shopping_goods']['works'][$key2]['guige'] = array_keys($order[$key]['shopping_goods']['works'][$key1]['works_prize'])[0]; 
+                         $order[$key]['shopping_goods']['works'][$key2]['pri'] = reset($value2['works_prize']);
+                         $order[$key]['total_num']  += $value2['num'];
+                          }
+                      
                }
 
            }
@@ -135,23 +157,59 @@ echo $a;
                                    ->order('order_time desc')
                                    ->select();
         
+        
         foreach ($order as $key => $value) {
            $order[$key]['total_num'] = 0;
            $order[$key]['shopping_goods'] = json_decode($value['shopping_goods'],true);
+     
+           if(isset($order[$key]['shopping_goods']['goods'])) {
+                foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
 
-           foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
-                $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg')->where('gid', $value1['gid'])->find();
-                $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
-                $order[$key]['shopping_goods']['goods'][$key1]['pri'] = implode($value1['gpri']);
-                $order[$key]['total_num']  += $value1['num'];
+                    $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg,sale_mode')->where('gid', $value1['gid'])->find();
+                    if(isset( $order[$key]['shopping_goods']['goods'][$key1]['info']['sale_mode'])) {
+                        $sale_mode = json_decode($order[$key]['shopping_goods']['goods'][$key1]['info']['sale_mode'],true);
+                        if($sale_mode['mode']==1) {
+                          $sale_mode = $sale_mode['name'];
+                        } else if($sale_mode['mode']==2) {
+                          $sale_mode = "预定/".$sale_mode['name'];
+                        }
+
+                        $order[$key]['shopping_goods']['goods'][$key1]['info']['sale_mode'] = $sale_mode;
+                        $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
+
+                        $order[$key]['shopping_goods']['goods'][$key1]['guige'] = array_keys($order[$key]['shopping_goods']['goods'][$key1]['gpri'])[0]; 
+                        $order[$key]['shopping_goods']['goods'][$key1]['gpri'] = reset($value1['gpri']); 
+
+                        $order[$key]['total_num']  += $value1['num'];
+                   }
+                    
+               }
            }
 
-           foreach ($order[$key]['shopping_goods']['works'] as $key2 => $value2) {
-                 $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic')->where('works_id', $value2['works_id'])->find();
-                 $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
-                 $order[$key]['shopping_goods']['works'][$key2]['pri'] = implode($value2['works_prize']);
-                 $order[$key]['total_num']  += $value2['num'];
+           if(isset($order[$key]['shopping_goods']['works'])) {
+
+               foreach ($order[$key]['shopping_goods']['works'] as $key2 => $value2) {
+                     $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic,sale_mode')->where('works_id', $value2['works_id'])->find();
+                      
+                      if (isset($order[$key]['shopping_goods']['works'][$key2]['info']['sale_mode'])) {
+                          $sale_mode = json_decode($order[$key]['shopping_goods']['works'][$key2]['info']['sale_mode'],true);
+                          if($sale_mode['mode']==1) {
+                            $sale_mode = $sale_mode['name'];
+                          } else if($sale_mode['mode']==2) {
+                            $sale_mode = "预定/".$sale_mode['name'];
+                          }
+                          $order[$key]['shopping_goods']['works'][$key2]['info']['sale_mode'] = $sale_mode;
+                          $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
+    
+                         $order[$key]['shopping_goods']['works'][$key2]['guige'] = array_keys($order[$key]['shopping_goods']['works'][$key1]['works_prize'])[0]; 
+                         $order[$key]['shopping_goods']['works'][$key2]['pri'] = reset($value2['works_prize']);
+                         $order[$key]['total_num']  += $value2['num'];
+                          }
+                      
+               }
+
            }
+           
                    
         }
 
@@ -172,26 +230,61 @@ echo $a;
                                    ->order('order_time desc')
                                    ->select();
         
+        
         foreach ($order as $key => $value) {
            $order[$key]['total_num'] = 0;
            $order[$key]['shopping_goods'] = json_decode($value['shopping_goods'],true);
+     
+           if(isset($order[$key]['shopping_goods']['goods'])) {
+                foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
 
-           foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
-                $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg')->where('gid', $value1['gid'])->find();
-                $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
-                $order[$key]['shopping_goods']['goods'][$key1]['pri'] = implode($value1['gpri']);
-                $order[$key]['total_num']  += $value1['num'];
+                    $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg,sale_mode')->where('gid', $value1['gid'])->find();
+                    if(isset( $order[$key]['shopping_goods']['goods'][$key1]['info']['sale_mode'])) {
+                        $sale_mode = json_decode($order[$key]['shopping_goods']['goods'][$key1]['info']['sale_mode'],true);
+                        if($sale_mode['mode']==1) {
+                          $sale_mode = $sale_mode['name'];
+                        } else if($sale_mode['mode']==2) {
+                          $sale_mode = "预定/".$sale_mode['name'];
+                        }
+
+                        $order[$key]['shopping_goods']['goods'][$key1]['info']['sale_mode'] = $sale_mode;
+                        $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
+
+                        $order[$key]['shopping_goods']['goods'][$key1]['guige'] = array_keys($order[$key]['shopping_goods']['goods'][$key1]['gpri'])[0]; 
+                        $order[$key]['shopping_goods']['goods'][$key1]['gpri'] = reset($value1['gpri']); 
+
+                        $order[$key]['total_num']  += $value1['num'];
+                   }
+                    
+               }
            }
 
-           foreach ($order[$key]['shopping_goods']['works'] as $key2 => $value2) {
-                 $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic')->where('works_id', $value2['works_id'])->find();
-                 $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
-                 $order[$key]['shopping_goods']['works'][$key2]['pri'] = implode($value2['works_prize']);
-                 $order[$key]['total_num']  += $value2['num'];
+           if(isset($order[$key]['shopping_goods']['works'])) {
+
+               foreach ($order[$key]['shopping_goods']['works'] as $key2 => $value2) {
+                     $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic,sale_mode')->where('works_id', $value2['works_id'])->find();
+                      
+                      if (isset($order[$key]['shopping_goods']['works'][$key2]['info']['sale_mode'])) {
+                          $sale_mode = json_decode($order[$key]['shopping_goods']['works'][$key2]['info']['sale_mode'],true);
+                          if($sale_mode['mode']==1) {
+                            $sale_mode = $sale_mode['name'];
+                          } else if($sale_mode['mode']==2) {
+                            $sale_mode = "预定/".$sale_mode['name'];
+                          }
+                          $order[$key]['shopping_goods']['works'][$key2]['info']['sale_mode'] = $sale_mode;
+                          $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
+    
+                         $order[$key]['shopping_goods']['works'][$key2]['guige'] = array_keys($order[$key]['shopping_goods']['works'][$key1]['works_prize'])[0]; 
+                         $order[$key]['shopping_goods']['works'][$key2]['pri'] = reset($value2['works_prize']);
+                         $order[$key]['total_num']  += $value2['num'];
+                          }
+                      
+               }
+
            }
+           
                    
         }
-
 
         $this->assign('order',$order);
         $this->assign('user',$user);
@@ -214,23 +307,57 @@ echo $a;
         foreach ($order as $key => $value) {
            $order[$key]['total_num'] = 0;
            $order[$key]['shopping_goods'] = json_decode($value['shopping_goods'],true);
+     
+           if(isset($order[$key]['shopping_goods']['goods'])) {
+                foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
 
-           foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
-                $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg')->where('gid', $value1['gid'])->find();
-                $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
-                $order[$key]['shopping_goods']['goods'][$key1]['pri'] = implode($value1['gpri']);
-                $order[$key]['total_num']  += $value1['num'];
+                    $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg,sale_mode')->where('gid', $value1['gid'])->find();
+                    if(isset( $order[$key]['shopping_goods']['goods'][$key1]['info']['sale_mode'])) {
+                        $sale_mode = json_decode($order[$key]['shopping_goods']['goods'][$key1]['info']['sale_mode'],true);
+                        if($sale_mode['mode']==1) {
+                          $sale_mode = $sale_mode['name'];
+                        } else if($sale_mode['mode']==2) {
+                          $sale_mode = "预定/".$sale_mode['name'];
+                        }
+
+                        $order[$key]['shopping_goods']['goods'][$key1]['info']['sale_mode'] = $sale_mode;
+                        $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
+
+                        $order[$key]['shopping_goods']['goods'][$key1]['guige'] = array_keys($order[$key]['shopping_goods']['goods'][$key1]['gpri'])[0]; 
+                        $order[$key]['shopping_goods']['goods'][$key1]['gpri'] = reset($value1['gpri']); 
+
+                        $order[$key]['total_num']  += $value1['num'];
+                   }
+                    
+               }
            }
 
-           foreach ($order[$key]['shopping_goods']['works'] as $key2 => $value2) {
-                 $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic')->where('works_id', $value2['works_id'])->find();
-                 $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
-                 $order[$key]['shopping_goods']['works'][$key2]['pri'] = implode($value2['works_prize']);
-                 $order[$key]['total_num']  += $value2['num'];
+           if(isset($order[$key]['shopping_goods']['works'])) {
+
+               foreach ($order[$key]['shopping_goods']['works'] as $key2 => $value2) {
+                     $order[$key]['shopping_goods']['works'][$key2]['info'] = Db::table('works')->field('works_name,works_pic,sale_mode')->where('works_id', $value2['works_id'])->find();
+                      
+                      if (isset($order[$key]['shopping_goods']['works'][$key2]['info']['sale_mode'])) {
+                          $sale_mode = json_decode($order[$key]['shopping_goods']['works'][$key2]['info']['sale_mode'],true);
+                          if($sale_mode['mode']==1) {
+                            $sale_mode = $sale_mode['name'];
+                          } else if($sale_mode['mode']==2) {
+                            $sale_mode = "预定/".$sale_mode['name'];
+                          }
+                          $order[$key]['shopping_goods']['works'][$key2]['info']['sale_mode'] = $sale_mode;
+                          $order[$key]['shopping_goods']['works'][$key2]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['works'][$key2]['info']['works_pic'])[0],2,-1);
+    
+                         $order[$key]['shopping_goods']['works'][$key2]['guige'] = array_keys($order[$key]['shopping_goods']['works'][$key1]['works_prize'])[0]; 
+                         $order[$key]['shopping_goods']['works'][$key2]['pri'] = reset($value2['works_prize']);
+                         $order[$key]['total_num']  += $value2['num'];
+                          }
+                      
+               }
+
            }
+           
                    
         }
-
 
         $this->assign('order',$order);
         $this->assign('user',$user);

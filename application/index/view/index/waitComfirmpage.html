@@ -43,11 +43,13 @@
 							<span>收货人:{$or.add_name}</span>{$or.add_telephone}
 						</p>
 						<p>
-							收货地址:{$or.add_detail}
+							收货地址:{$or.add_province} {$or.add_city} {$or.add_area}{$or.add_detail}
 						</p>
 					</div>
 					<div class="order-item">
+					    {if isset($or.shopping_goods.goods)}
 					    {foreach $or.shopping_goods.goods as $go}
+					    {if isset($or.add_id)} 
 						<a class="pro-item" href="{:url('User/goods',['gid'=>$go.gid])}">
 						<div class="item-img">
 							<img src="__UPLOADS__/{$go.info.pic}">
@@ -59,17 +61,40 @@
 							<div>
 							</div>
 							<p class="price pro-price-qty">
-								¥{$go.pri}<span class="gray84 ml10 f12 fr">单件运费(没有这个) ¥0</span>
+								¥{$go.gpri}<span class="gray84 ml10 f12 fr">单件运费¥0</span>
 							</p>
 							<p class="num">
-								<span class="cunt">x{$go.num}</span><span class="opt">          预定/5个工作日发货(好像也没有这个) 1包装</span>
+								<span class="cunt">x{$go.num}</span><span class="opt">          {$go.info.sale_mode}   {$wo.guige}</span>
 							</p>
 						</div>
 						</a>
+                        {else}
+                        <a class="pro-item" href="">
+						<div class="item-img">
+							<img src="__UPLOADS__/">
+						</div>
+						<div class="item-info">
+							<p class="name">
+								产品已被销毁
+							</p>
+							<div>
+							</div>
+							<p class="price pro-price-qty">
+								¥{$go.gpri}<span class="gray84 ml10 f12 fr">单件运费¥0</span>
+							</p>
+							<p class="num">
+								<span class="cunt">x{$go.num}</span><span class="opt">          产品已被销毁</span>
+							</p>
+						</div>
+						</a>
+                        {/if}
                         {/foreach}
-
+                        {/if}
+                        
+                        {if isset($or.shopping_goods.works)}
                         {foreach $or.shopping_goods.works as $wo}
-						<a class="pro-item" href="{:url('User/works',['works_id'=>$wo.works_id])}">
+                        {if isset($wo.works_id)} 
+						<!-- <a class="pro-item" href="{:url('User/works',['works_id'=>$wo.works_id])}"> -->
 						<div class="item-img">
 							<img src="__UPLOADS__/{$wo.info.pic}">
 						</div>
@@ -80,20 +105,41 @@
 							<div>
 							</div>
 							<p class="price pro-price-qty">
-								¥{$wo.pri}<span class="gray84 ml10 f12 fr">单件运费(没有这个) ¥0</span>
+								¥{$wo.pri}<span class="gray84 ml10 f12 fr">单件运费¥0</span>
 							</p>
 							<p class="num">
-								<span class="cunt">x{$wo.num}</span><span class="opt">          预定/5个工作日发货(好像也没有这个) 1包装</span>
+								<span class="cunt">x{$wo.num}</span><span class="opt">          {$wo.info.sale_mode}   {$wo.guige} </span>
 							</p>
 						</div>
 						</a>
+						{else}
+						<!-- <a class="pro-item" href="{:url('User/works',['works_id'=>$wo.works_id])}"> -->
+						<div class="item-img">
+							<img src="__UPLOADS__/">
+						</div>
+						<div class="item-info">
+							<p class="name">
+								产品已被销毁
+							</p>
+							<div>
+							</div>
+							<p class="price pro-price-qty">
+								¥{$wo.pri}<span class="gray84 ml10 f12 fr">单件运费¥0</span>
+							</p>
+							<p class="num">
+								<span class="cunt">x{$wo.num}</span><span class="opt">          产品已被销毁</span>
+							</p>
+						</div>
+						</a>
+						{/if}
                         {/foreach}
+                        {/if}
 
 
 					</div>
 					<div class="order-total">
 						<p>
-							共 {$or.total_num} 件，合计：¥{$or.order_pri} <span class="gray84 f12">(含运费¥0 没有这个)</span>
+							共 {$or.total_num} 件，合计：¥{$or.order_pri} <span class="gray84 f12">(含运费¥0)</span>
 						</p>
 					</div>
 					<div class="order-btn">
