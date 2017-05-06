@@ -20,6 +20,10 @@ class User extends Base {
         return $user = Db::table('user')->where('openid', $openid)->find(); 
     }
 
+    public function test() {
+       return $this->fetch('index/editAddress');
+    }
+
 
     //个人信息 主页面 center.html
 	public function center() {
@@ -35,9 +39,11 @@ class User extends Base {
         $this->assign('user',$user);
         $product = Db::table('goods')->where('gid', $gid)->find();
         $product['gimg'] = explode(',',substr($product['gimg'], 2,-2));
+        $product['gpri'] = json_decode($product['gpri'],true);
+        $product['sale_mode'] = json_decode($product['sale_mode'],true);
+
         $this->assign('product',$product);
-       // var_dump($product);
-        //exit;
+      
         return $this->fetch('index/product');
     }
 
@@ -69,6 +75,8 @@ class User extends Base {
 
            foreach ($order[$key]['shopping_goods']['goods'] as $key1 => $value1) {
                 $order[$key]['shopping_goods']['goods'][$key1]['info'] = Db::table('goods')->field('gname,gimg')->where('gid', $value1['gid'])->find();
+                var_dump($value1['gid']);
+                exit;
                 $order[$key]['shopping_goods']['goods'][$key1]['info']['pic'] = substr(explode(',',$order[$key]['shopping_goods']['goods'][$key1]['info']['gimg'])[0],2,-1);
                 $order[$key]['shopping_goods']['goods'][$key1]['pri'] = implode($value1['gpri']);
                 $order[$key]['total_num']  += $value1['num'];
@@ -82,6 +90,8 @@ class User extends Base {
            }
         	         
         }
+      var_dump($order);
+      exit;
         $this->assign('order',$order);
         $this->assign('user',$user);
         return $this->fetch('index/shoppingAll');
@@ -224,22 +234,34 @@ class User extends Base {
     //增加地址信息
     public function add_address() {
         $user = $this->get_user();
-        $address = array();
-
         $request = Request::instance();
         if($request->isPost()) {
-
+            $data['add_province'] = "";
+            $data['add_city'] = "";
+            $data['add_area'] = "";
+            
             $data['add_detail'] = $request->post('detail','');
             $data['add_name'] = $request->post('name','');
             $data['add_telephone'] = $request->post('tel','');
             $data['user_id'] = $user['user_id'];
             $data['add_default'] = '0';
+            $add = explode('/', $request->post('area',''));
+
+            if(isset($add[0])) { 
+              $data['add_province'] = $add[0];
+            } 
+            if(isset($add[1])) {
+              $data['add_city'] = $add[1];
+            }
+            if(isset($add[2])) {
+              $data['add_area'] = $add[2];
+            }
 
             if(trim($data['add_name']) == null) {
               $this->showNotice("缺少收货人姓名");
             } else if(trim($data['add_telephone']) == null) {
               $this->showNotice("缺少收货人电话");
-            } else if(trim($data['add_detail']) == null) {
+            } else if($data['add_detail'] == null || $data['add_area'] == null || $data['add_city'] == null||$data['add_province'] == null) {
               $this->showNotice("缺少收货人地址信息");
             } else {
               Db::table('address')->insert($data);
@@ -257,22 +279,36 @@ class User extends Base {
 
         $user = $this->get_user();
         $address = Db::table('address')->where('add_id',$add_id)->find();
+        $address['area'] = "".$address['add_province']."/".$address['add_city']."/".$address['add_area'];
 
         $request = Request::instance();
         if ($request->isPost()) { 
+           $data['add_province'] = "";
+           $data['add_city'] = "";
+           $data['add_area'] = "";
            
            $data['add_id'] = $request->post('add_id', '');
-        
            $data['add_detail'] = $request->post('detail', '');
            $data['add_name'] = $request->post('name', '');
            $data['add_telephone'] =$request->post('tel', '');
+           $add = explode('/', $request->post('area',''));
+
+            if(isset($add[0])) { 
+              $data['add_province'] = $add[0];
+            } 
+            if(isset($add[1])) {
+              $data['add_city'] = $add[1];
+            }
+            if(isset($add[2])) {
+              $data['add_area'] = $add[2];
+            }
 
 
            if(trim($data['add_name']) == null) {
               $this->showNotice("缺少收货人姓名");
             } else if(trim($data['add_telephone']) == null) {
               $this->showNotice("缺少收货人电话");
-            } else if(trim($data['add_detail']) == null) {
+            } else if($data['add_detail'] == null || $data['add_area'] == null || $data['add_city'] == null||$data['add_province'] == null) {
               $this->showNotice("缺少收货人地址信息");
             } else {
                 Db::table('address')->where('add_id',$data['add_id'])->update($data);
@@ -320,7 +356,6 @@ class User extends Base {
     echo '</html>';
     exit;
     }
-
 
 
 
